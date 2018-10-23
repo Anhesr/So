@@ -1,0 +1,26 @@
+fork()devuelve el identificador del hijo
+
+Memoria compartida=sistema de claves
+
+IPC : inter process comunication 
+	-comunicacion entre procesos(P1)
+	-semaforos
+	-pasos mensajes
+	*funcion ftok()
+
+Pasos para la memoria compartida :
+1)genero la clave(ftok)
+{
+
+2)reservo memoria(shmget)(0700 son los permisos de 111 RWX [lectura escritura ejecucion])(devuelve un entero que debe de ser distinto de -1
+
+3)direcciono puntero(shmat)
+
+4)opero sobre memoria compartida(shmdt)
+
+5)libero memoria compartida(shmctl)
+
+6)la elimino
+}<shm.h>
+
+
