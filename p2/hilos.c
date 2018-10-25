@@ -26,7 +26,6 @@ int main()
     // Create NHILOS threads
     for (i = 0; i < NHILOS; i++) {
 	v[i] = i;
-	//usleep(100000);
 	if ((status = pthread_create(&hilos[i], NULL, adder, (void *) &v[i])))
 	    exit(status);
     }
@@ -58,19 +57,18 @@ void *adder(void *p)
     extern bool eligiendo[NHILOS];
     extern int numero[NHILOS];
     int *id, i;
-    int *k=(int*)p;
 	id = (int *) p;
 
 
 
-	for(int i =0;i<NHILOS;i++){
-		eligiendo[i]= true;
-		numero[i]=maxNumero(numero)+1;
-		eligiendo[i]= false;
+	for(int k =0;k<ITER;k++){
+		eligiendo[*id]= true;
+		numero[*id]=maxNumero(numero)+1;
+		eligiendo[*id]= false;
 
 		for(int j=0;j<NHILOS;j++){
 			while(eligiendo[j]);
-			while ((numero[j] != 0) && (numero[j], j) < (numero[i], i));
+			while ((numero[j] != 0) && ((numero[j]<numero[*id]) || ((numero[j]==numero[*id])&&(j<*id))));
 		}
 
 
@@ -85,7 +83,7 @@ void *adder(void *p)
 
     //Fin seccion critica
 
-    	numero[*k]=0;
+    	numero[*id]=0;
 
     	to_return = malloc(sizeof(double));
 
