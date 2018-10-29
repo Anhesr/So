@@ -5,49 +5,43 @@
 #include <time.h>
 #include <semaphore.h>
 
-double counter = 0;
-int suma = 0;
+int sumap=0;
+int suma=0;
 
 #define ITER	1000
 #define NHILOS	2
-#define NBUFF 50
+#define NBUFF 5
 int buffer[NBUFF];
 sem_t empty,full,mutex;
-
-int producirDato();
-int sacarDato();
-void consumirDato();
  
 int main()
 {
-    pthread_t hilos[NHILOS];
-    int status, i, v[NHILOS];
-    extern double counter;
+    pthread_t con,prod;
     extern sem_t empty,full,mutex;
-    double *r_value;
+    extern int sumap,suma;
+    double *r_valuep,*r_valuec;
     srand(time(NULL));
     void* Productor();
     void* Consumidor();
 
     //inicializar
-    sem_init (&empty,0,NBUFF);
+    sem_init (&empty,0,1);
 	sem_init (&full,0,0);
-	sem_init (&mutex,0,1);
+	sem_init (&mutex,0,NBUFF);
 
 
     //Hilos
-	
-	pthread_create(&hilos[0], NULL, Productor,(void*) NULL);
+	pthread_create(&prod, NULL,(void*) Productor,(void*) NULL);
     usleep(100000);
-    pthread_create(&hilos[1], NULL, Consumidor,(void*) NULL);
-
+    pthread_create(&con, NULL,(void*) Consumidor,(void*) NULL);
 
 
     // Wait 
-    for (i = 0; i < NHILOS; i++) {
-	pthread_join(hilos[i], (void **) &r_value);
-	printf("Value returned by %lu thread: %lf\n", hilos[i], *r_value);
-    }
+	pthread_join(prod, (void **) &r_valuep);
+	pthread_join(con, (void **) &r_valuec);
+
+	printf("Suma valores productor (Hilo :%lu) : %i\n",prod,sumap);
+	printf("Suma valores consumidor(Hilo :%lu) : %i\n",con,suma);
 
     return 0;
 
@@ -56,40 +50,37 @@ int main()
 void* Productor(){
 	int dato;
 	extern sem_t empty,full,mutex;
+	extern int buffer[NBUFF];
+	extern int sumap;
 
 	for(int j=0;j<NBUFF;j++){
-		dato=producirDato();
+		dato=(rand()%1000);
 		sem_wait(&empty);
 		sem_wait(&mutex);
 		buffer[j]=dato;
 		sem_post(&mutex);
 		sem_post(&full);
+		sumap=sumap+dato;
 
 	}
+
+	pthread_exit((void*)NULL);
 }
 
 void* Consumidor(){
 	int dato;
 	extern sem_t empty,full,mutex;
+	extern int buffer[NBUFF];
 
 	for(int j=0;j<NBUFF;j++){
 		sem_wait(&full);
 		sem_wait(&mutex);
-		dato=sacarDato(j);
+		dato=buffer[j];
 		sem_post(&mutex);
 		sem_post(&empty);
-		consumirDato(dato);
+		suma=suma+dato;
 	}
+
+	pthread_exit((void*)NULL);
 }
 
-int producirDato(){
-	return (rand()%1000);
-}
-
-int sacarDato(int j){
-	return(buffer[j]);
-}
-void consumirDato(int dato){
-	extern int suma;
-	suma=suma+dato;
-}

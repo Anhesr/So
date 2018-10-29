@@ -95,9 +95,9 @@ void *adder(void *p)
 
 
 
-    /*to_return = malloc(sizeof(double));
+    to_return = malloc(sizeof(double));
 
     *to_return = counter;
 
-    pthread_exit((void *) to_return);*/
+    pthread_exit((void *) to_return);
 }
