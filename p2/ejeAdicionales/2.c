@@ -5,13 +5,15 @@
 
 double counter = 0;
 typedef int bool;
+int NHILOS;
+int ITER;
 #define true 1
 #define false 0
 
-#define ITER	1000
-#define NHILOS	4
+//#define ITER	1000
+//#define NHILOS	4
 
-bool eligiendo[NHILOS]={false,false,false,false};
+bool eligiendo[]={false,false,false,false};
 int numero[NHILOS]={0,0,0,0};
 
 
@@ -22,6 +24,11 @@ int main()
     extern double counter;
     void *adder(void *);
     double *r_value;
+    extern int NHILOS;
+
+    printf("introduzca el numero de hilos");
+    scanf("%i",&NHILOS);
+    extern int ITER=NHILOS*100;
 
     // Create NHILOS threads
     for (i = 0; i < NHILOS; i++) {
@@ -54,6 +61,8 @@ void *adder(void *p)
 {
     double l, *to_return;
     extern double counter;
+    extern int NHILOS;
+    extern int ITER=NHILOS*100;
     extern bool eligiendo[NHILOS];
     extern int numero[NHILOS];
     int *id, i;
