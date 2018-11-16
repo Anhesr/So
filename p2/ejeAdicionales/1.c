@@ -21,6 +21,7 @@ int main(){
 	srand(time(NULL));
 	double* r_value;	
 	void *mul(void*);
+	int vaux[3];
 
 	printf("Vector:\n");
 	for(int i=0;i<3;i++){
@@ -39,8 +40,8 @@ int main(){
 	}
 
 	for(int i=0;i<3;i++){
-		pthread_create(&hilos[i],NULL,mul,(void*) &i);
-		usleep(100000);
+		vaux[i]=i;
+		pthread_create(&hilos[i],NULL,mul,(void*) &vaux[i]);
 	}
 
 	for(int i=0;i<3;i++){

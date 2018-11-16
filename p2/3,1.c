@@ -13,7 +13,7 @@ int suma=0;
 #define NBUFF 5
 int buffer[NBUFF];
 sem_t empty,full,mutex;
- 
+
 int main()
 {
     pthread_t con,prod;
@@ -32,7 +32,6 @@ int main()
 
     //Hilos
 	pthread_create(&prod, NULL,(void*) Productor,(void*) NULL);
-    usleep(100000);
     pthread_create(&con, NULL,(void*) Consumidor,(void*) NULL);
 
 
