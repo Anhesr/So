@@ -6,9 +6,10 @@
 #include <semaphore.h>
 
 int sumap=0;
-int *suma;
+int suma=0;
 
 #define ITER	1000
+#define NHILOS	2
 #define NBUFF 5
 int buffer[NBUFF];
 sem_t mutex;
@@ -20,16 +21,11 @@ int main()
 	scanf("%i",&NCON);
     pthread_t con[NCON],prod;
     extern sem_t mutex;
-    extern int sumap;
-    extern int *suma;
-    suma =malloc(NCON*sizeof(int));
-    for(int i=0;i<NCON;i++){
-    	suma[i]=0;
-    }
+    extern int sumap,suma;
     double *r_valuep,*r_valuec;
     srand(time(NULL));
     void* Productor();
-    void* Consumidor(void*);
+    void* Consumidor();
 
     //inicializar
 	sem_init (&mutex,0,1);
@@ -39,7 +35,7 @@ int main()
 	pthread_create(&prod, NULL,(void*) Productor,(void*) NULL);
 
     for(int i =0;i<NCON;i++){
-    pthread_create(&con[i], NULL,(void*) Consumidor,(void*) &i);
+    pthread_create(&con[i], NULL,(void*) Consumidor,(void*) NULL);
 	}
 
     // Wait 
@@ -49,11 +45,13 @@ int main()
 
 	for (int i = 0; i < NCON; i++) {
 	pthread_join(con[i], (void **) &r_valuec);
-			printf("La suma es(Hilo :%lu) : %i\n",con[i],suma[i]);
+		if(i==NCON-1){
+			printf("La suma final de los hilos consumidores es(Hilo :%lu) : %i\n",con[i],suma);
+		}
     }
 
     return 0;
-    free(suma);
+
 }
 
 void* Productor(){
@@ -74,16 +72,19 @@ void* Productor(){
 	pthread_exit((void*)NULL);
 }
 
-void* Consumidor(void* p){
+void* Consumidor(){
 	int dato;
-	int *i=(int*)p;
-	extern sem_t mutex;
-	extern int *suma;
+
+	extern sem_t empty,full,mutex;
+	extern int suma;
 	extern int buffer[NBUFF];
-	sem_wait(&mutex);
+
 	for(int j=0;j<NBUFF;j++){
+		sem_wait(&mutex);
 		dato=buffer[j];
-		suma[*i]=suma[*i]+dato;
+		sem_post(&mutex);
+		suma=suma+dato;
 	}
-	sem_post(&mutex);
+
+	pthread_exit((void*)NULL);
 }
