@@ -7,11 +7,12 @@
 
 int sumap=0;
 int suma=0;
+int NBUFF;
 
 #define ITER	1000
 #define NHILOS	2
-#define NBUFF 5
-int buffer[NBUFF];
+
+int *buffer;
 sem_t empty,full,mutex;
 
 int main()
@@ -19,6 +20,11 @@ int main()
     pthread_t con,prod;
     extern sem_t empty,full,mutex;
     extern int sumap,suma;
+    extern int *buffer;
+    extern int NBUFF;
+    printf("Introduce el numero de elementos del buffer\n");
+    scanf("%i",&NBUFF);
+    buffer=malloc(NBUFF*sizeof(int));
     double *r_valuep,*r_valuec;
     srand(time(NULL));
     void* Productor();
@@ -49,8 +55,9 @@ int main()
 void* Productor(){
 	int dato;
 	extern sem_t empty,full,mutex;
-	extern int buffer[NBUFF];
+	extern int *buffer;
 	extern int sumap;
+	extern int NBUFF;
 
 	for(int j=0;j<NBUFF;j++){
 		dato=(rand()%1000);
@@ -69,7 +76,8 @@ void* Productor(){
 void* Consumidor(){
 	int dato;
 	extern sem_t empty,full,mutex;
-	extern int buffer[NBUFF];
+	extern int *buffer;
+	extern int NBUFF;
 
 	for(int j=0;j<NBUFF;j++){
 		sem_wait(&full);
